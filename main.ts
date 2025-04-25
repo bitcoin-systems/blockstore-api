@@ -6,7 +6,7 @@ Deno.serve({ port: 4242 }, async (req) => {
     case 'GET':
       return await handleGET(req);
     case 'POST':
-      return await handlePOST(req);
+      // return await handlePOST(req);
   }
  
   const url = new URL(req.url);

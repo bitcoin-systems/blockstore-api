@@ -4,9 +4,16 @@ const kv = await Deno.openKv();
 
 export const router = async (req: any) => {
   const url = new URL(req.url);
+  const apiKey = url.searchParams.get('key');
+  const secret = Deno.env.get("API_KEY");
 
+  console.log('req url:', url);
   if (url.pathname !== '/api/store') {
     return http400({ msg: 'path not supported' });
+  }
+
+  if (apiKey !== secret) {
+    return http400({ msg: 'invalid api key' });
   }
 
   switch (req.method) {
@@ -28,7 +35,7 @@ async function handlePOST(req) {
 async function handleGET(req) {
   const records = kv.list({ prefix: ["store"] });
   const items: any = [];
-  
+
   for await (const res of records) {
     items.push(res.value);
   }

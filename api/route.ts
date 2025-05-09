@@ -9,7 +9,9 @@ export const router = async (req: any) => {
 
   const [_, prefix, routeName] = url.pathname.split('/');
   
-  console.log(prefix, routeName, url.pathname.split('/'));
+  if (!routeName || routeName.trim() === '') {
+    return http400({ msg: 'invalid route name' });
+  }
 
   if (!['api'].includes(prefix)) {
     return http400({ msg: 'path not supported' });
@@ -29,6 +31,10 @@ export const router = async (req: any) => {
 
 async function handlePOST(req, routeName) {
   const body = await req.json();
+
+  if (!body || !body.id) {
+    return http400({ msg: 'invalid request body, id is required' });
+  }
 
   await kv.set([routeName, body.id], body);
 

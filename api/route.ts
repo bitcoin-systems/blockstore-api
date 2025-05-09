@@ -29,7 +29,7 @@ export const router = async (req: any) => {
   }
 }
 
-async function handlePOST(req, routeName) {
+async function handlePOST(req: Request, routeName: string) {
   const body = await req.json();
 
   if (!body || !body.id) {
@@ -41,7 +41,7 @@ async function handlePOST(req, routeName) {
   return http200({ msg: 'ok' });
 }
 
-async function handleGET(req, routeName) {
+async function handleGET(req: Request, routeName: string) {
   const records = kv.list({ prefix: [routeName] });
   const items: any = [];
 

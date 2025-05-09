@@ -7,7 +7,6 @@ export const router = async (req: any) => {
   const url = new URL(req.url);
   const apiKey = url.searchParams.get('key');
 
-  console.log('req url:', url);
   const [_, prefix, routeName] = url.pathname.split('/');
   
   console.log(prefix, routeName, url.pathname.split('/'));

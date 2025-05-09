@@ -1,14 +1,19 @@
 import { http200, http400 } from "../utils/response.ts";
 
 const kv = await Deno.openKv();
+const secret = Deno.env.get("API_KEY");
 
 export const router = async (req: any) => {
   const url = new URL(req.url);
   const apiKey = url.searchParams.get('key');
-  const secret = Deno.env.get("API_KEY");
 
-  console.log('req url:', url);
-  if (url.pathname !== '/api/store') {
+  const [_, prefix, routeName] = url.pathname.split('/');
+  
+  if (!routeName || routeName.trim() === '') {
+    return http400({ msg: 'invalid route name' });
+  }
+
+  if (!['api'].includes(prefix)) {
     return http400({ msg: 'path not supported' });
   }
 
@@ -18,22 +23,26 @@ export const router = async (req: any) => {
 
   switch (req.method) {
     case 'GET':
-      return await handleGET(req);
+      return await handleGET(req, routeName);
     case 'POST':
-      return await handlePOST(req);
+      return await handlePOST(req, routeName);
   }
 }
 
-async function handlePOST(req) {
+async function handlePOST(req: Request, routeName: string) {
   const body = await req.json();
 
-  await kv.set(["store", body.id], body);
+  if (!body || !body.id) {
+    return http400({ msg: 'invalid request body, id is required' });
+  }
+
+  await kv.set([routeName, body.id], body);
 
   return http200({ msg: 'ok' });
 }
 
-async function handleGET(req) {
-  const records = kv.list({ prefix: ["store"] });
+async function handleGET(req: Request, routeName: string) {
+  const records = kv.list({ prefix: [routeName] });
   const items: any = [];
 
   for await (const res of records) {

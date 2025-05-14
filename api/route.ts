@@ -7,7 +7,7 @@ export const router = async (req: any) => {
   const url = new URL(req.url);
   const apiKey = url.searchParams.get('key');
 
-  const [_, prefix, routeName] = url.pathname.split('/');
+  const [_, prefix, routeName, param] = url.pathname.split('/');
   
   if (!routeName || routeName.trim() === '') {
     return http400({ msg: 'invalid route name' });
@@ -26,6 +26,8 @@ export const router = async (req: any) => {
       return await handleGET(req, routeName);
     case 'POST':
       return await handlePOST(req, routeName);
+    case 'DELETE':
+      return await handleDELETE(req, routeName, param);
   }
 }
 
@@ -50,4 +52,14 @@ async function handleGET(req: Request, routeName: string) {
   }
 
   return http200(items);
+}
+
+async function handleDELETE(req: Request, routeName: string, param: string) {
+  try {
+    const key = [routeName, param].filter(e => e);
+    await kv.delete(key);
+    return http200({ msg: 'deleted successfully' });
+  } catch (error) {
+    return http400({ msg: 'failed to delete resource', error: error.message });
+  }
 }

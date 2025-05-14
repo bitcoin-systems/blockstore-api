@@ -55,7 +55,11 @@ async function handleGET(req: Request, routeName: string) {
 }
 
 async function handleDELETE(req: Request, routeName: string, param: string) {
-  await kv.delete([routeName, param].filter(e => e));
-
-  return http200({ msg: 'ok'});
+  try {
+    const key = [routeName, param].filter(e => e);
+    await kv.delete(key);
+    return http200({ msg: 'deleted successfully' });
+  } catch (error) {
+    return http400({ msg: 'failed to delete resource', error: error.message });
+  }
 }

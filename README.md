@@ -9,5 +9,8 @@ deno run --allow-net --unstable-kv main.ts
 
 # API's
 
-- Get /api/store
-- Post /api/store
+Dynamic api routing
+
+- Get /api/{collection}
+- Post /api/{collection}
+- Delete /api/{collection}/

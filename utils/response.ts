@@ -1,21 +1,12 @@
-export const http200 = (json: any) => {
-  const response = new Response(JSON.stringify(json), {
-    status: 200,
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+const headers = {
+  "content-type": "application/json",
+};
 
-  return response;
-}
+const res = (status, json) => new Response(JSON.stringify(json), {
+  status: status,
+  headers
+});
 
-export const http400 = (json: any) => {
-  const response = new Response(JSON.stringify(json), {
-    status: 400,
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+export const http200 = (json: any) => res(200, json);
 
-  return response;
-}
+export const http400 = (json: any) => res(400, json);

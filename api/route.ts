@@ -10,7 +10,7 @@ export const router = async (req: any) => {
   const [_, prefix, routeName, param] = url.pathname.split('/');
   
   if (!routeName || routeName.trim() === '') {
-    return http400({ msg: 'invalid route name' });
+    return http200({ msg: 'blockstore api 👋' });
   }
 
   if (!['api'].includes(prefix)) {

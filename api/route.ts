@@ -1,4 +1,5 @@
 import { http200, http400 } from "../utils/response.ts";
+import { logger } from "../utils/logger.ts";
 
 const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
@@ -6,6 +7,8 @@ const secret = Deno.env.get("API_KEY");
 export const router = async (req: any) => {
   const url = new URL(req.url);
   const apiKey = url.searchParams.get('key');
+
+  logger(req.method, req.url);
 
   const [_, prefix, routeName, param] = url.pathname.split('/');
   

@@ -1,3 +1,3 @@
 export const logger = (method, url) => {
-  console.log(new Date().toISOString(), method, url);
+  console.log(`%c ${new Date().toISOString()}, ${method}, ${url}`, 'color: green');
 }

@@ -4,7 +4,7 @@ This project is built using deno v2 and kv store without using any dependencies
 # Project setup
 
 ```
-deno run --allow-net --unstable-kv main.ts
+deno run --allow-net --unstable-kv --allow-env main.ts
 ```
 
 # API's

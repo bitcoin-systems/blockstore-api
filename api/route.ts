@@ -4,6 +4,7 @@ import { logger } from "../utils/logger.ts";
 const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
 
+// Route handler
 export const router = async (req: any) => {
   const url = new URL(req.url);
   const apiKey = url.searchParams.get('key');
@@ -34,6 +35,7 @@ export const router = async (req: any) => {
   }
 }
 
+// Insert new reocrd
 async function handlePOST(req: Request, routeName: string) {
   const body = await req.json();
 
@@ -46,6 +48,7 @@ async function handlePOST(req: Request, routeName: string) {
   return http200({ msg: 'ok' });
 }
 
+// Get all records
 async function handleGET(req: Request, routeName: string) {
   const records = kv.list({ prefix: [routeName] });
   const items: any = [];
@@ -57,6 +60,7 @@ async function handleGET(req: Request, routeName: string) {
   return http200(items);
 }
 
+// Deletes a record
 async function handleDELETE(req: Request, routeName: string, param: string) {
   try {
     const key = [routeName, param].filter(e => e);

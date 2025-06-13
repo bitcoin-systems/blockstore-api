@@ -14,3 +14,7 @@ Dynamic api routing
 - Get /api/{collection}
 - Post /api/{collection}
 - Delete /api/{collection}/
+
+# Router
+
+This project uses url based dynamic routing like parse server. 

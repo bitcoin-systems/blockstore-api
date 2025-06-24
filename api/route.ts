@@ -7,6 +7,26 @@ const secret = Deno.env.get("API_KEY");
 // Route handler
 export const router = async (req: any) => {
   const url = new URL(req.url);
+  // CORS headers
+  const headers = new Headers({
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  });
+
+   // Handle preflight request
+   if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers });
+   }
+
+  if (req.method === "GET" && url.pathname === "/api/hello") {
+    headers.set("Content-Type", "application/json");
+    return new Response(JSON.stringify({ message: "Hello from Deno!" }), {
+      status: 200,
+      headers,
+    });
+  }
+
   const apiKey = url.searchParams.get('key');
 
   logger(req.method, req.url);
@@ -33,6 +53,8 @@ export const router = async (req: any) => {
     case 'DELETE':
       return await handleDELETE(req, routeName, param);
   }
+
+  return new Response("Not Found", { status: 404, headers });
 }
 
 // Insert new reocrd

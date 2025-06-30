@@ -1,5 +1,6 @@
 import { http200, http400 } from "../utils/response.ts";
 import { logger } from "../utils/logger.ts";
+import { headers } from "../utils/constants.ts";
 
 const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
@@ -8,24 +9,11 @@ const secret = Deno.env.get("API_KEY");
 export const router = async (req: any) => {
   const url = new URL(req.url);
   // CORS headers
-  const headers = new Headers({
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  });
 
    // Handle preflight request
    if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers });
+    return new Response(null, { status: 204, headers: new Headers(headers) });
    }
-
-  if (req.method === "GET" && url.pathname === "/api/hello") {
-    headers.set("Content-Type", "application/json");
-    return new Response(JSON.stringify({ message: "Hello from Deno!" }), {
-      status: 200,
-      headers,
-    });
-  }
 
   const apiKey = url.searchParams.get('key');
 
@@ -54,7 +42,7 @@ export const router = async (req: any) => {
       return await handleDELETE(req, routeName, param);
   }
 
-  return new Response("Not Found", { status: 404, headers });
+  return new Response("Not Found", { status: 404, headers: new Headers(headers) });
 }
 
 // Insert new reocrd

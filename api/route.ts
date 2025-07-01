@@ -38,6 +38,8 @@ export const router = async (req: any) => {
       return await handleGET(req, routeName);
     case 'POST':
       return await handlePOST(req, routeName);
+    case 'PUT':
+      return await handlePUT(req, routeName, param);
     case 'DELETE':
       return await handleDELETE(req, routeName, param);
   }
@@ -80,5 +82,22 @@ async function handleDELETE(req: Request, routeName: string, param: string) {
     return http200({ msg: 'deleted successfully' });
   } catch (error) {
     return http400({ msg: 'failed to delete resource', error: error.message });
+  }
+}
+
+// Updates a record
+async function handlePUT(req: Request, routeName: string, param: string) {
+  try {
+    const body = await req.json();
+
+    if (!body || !body.id) {
+      return http400({ msg: 'invalid request body, id is required' });
+    }
+    
+    await kv.set([routeName, body.id], body);
+    
+    return http200({ msg: 'updated successfully' });
+  } catch (error) {
+    return http400({ msg: 'failed to update resource', error: error.message });
   }
 }

@@ -35,7 +35,7 @@ export const router = async (req: any) => {
 
   switch (req.method) {
     case 'GET':
-      return await handleGET(req, routeName);
+      return await handleGET(req, routeName, param);
     case 'POST':
       return await handlePOST(req, routeName);
     case 'PUT':
@@ -61,7 +61,13 @@ async function handlePOST(req: Request, routeName: string) {
 }
 
 // Get all records
-async function handleGET(req: Request, routeName: string) {
+async function handleGET(req: Request, routeName: string, param: string) {
+  // get one
+  if (param) {
+    const item = await kv.get([routeName, param]);
+    return http200(item);
+  }
+  
   const records = kv.list({ prefix: [routeName] });
   const items: any = [];
 

@@ -12,6 +12,7 @@ deno run --allow-net --unstable-kv --allow-env main.ts
 Dynamic api routing
 
 - Get /api/{collection}
+- Get /api/{collection}/id
 - Post /api/{collection}
 - Delete /api/{collection}/
 

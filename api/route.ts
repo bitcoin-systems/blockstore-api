@@ -1,9 +1,11 @@
-import { http200, http400 } from "../utils/response.ts";
+import { http200, http400, send } from "../utils/response.ts";
 import { logger } from "../utils/logger.ts";
 import { headers } from "../utils/constants.ts";
+import { printGsat } from "./scripts/gsat.ts";
 
 const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
+const secretv2 = Deno.env.get("API_KEY_SECRET");
 
 // Route handler
 export const router = async (req: any) => {
@@ -31,6 +33,10 @@ export const router = async (req: any) => {
 
   if (apiKey !== secret) {
     return http400({ msg: 'invalid api key' });
+  }
+
+  if (req.method === 'DELETE' && apiKey !== secretv2) {
+    return http400({ msg: 'invalid api key for delete operation' });
   }
 
   switch (req.method) {
@@ -73,6 +79,12 @@ async function handleGET(req: Request, routeName: string, param: string) {
 
   for await (const res of records) {
     items.push(res.value);
+  }
+
+  if (routeName === 'goldensat') {
+    const formatted = printGsat(items);
+
+    return send(formatted);
   }
 
   return http200(items);

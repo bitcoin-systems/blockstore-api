@@ -36,6 +36,7 @@ export function printGsat(items) {
         address: tx.address,
         tickets: tickets,
         amount: amount,
+        token: `${String(tx.tokenValue).slice(0, 8)} ${tx.tokenName}`,
         tx: tx.matchedTx,
         site: tx.partner,
         op: tx.txType,
@@ -60,11 +61,13 @@ export function printGsat(items) {
  <body>
    <div>
      <!--content-->
+    <h1 style="text: center; margin: 10px"> Tracked Addresses </h1> 
     <table style="width:100%">
       <tr>
         <th>Address</th>
         <th>Tickets</th>
-        <th>Amount</th>
+        <th>Amount(USD)</th>
+        <th>Token</th>
         <th>tx</th>
         <th>Site</th>
         <th>Op</th>
@@ -74,7 +77,8 @@ export function printGsat(items) {
         <td>${it.address}</td>
         <td>${it.tickets}</td>
         <td>${it.amount}</td>
-        <td>${it.matchedTx}</td>
+        <td>${it.token}</td>
+        <td>${it.tx}</td>
         <td>${it.site}</td>
         <td>${it.op}</td>
         <td>${it.date}</td>

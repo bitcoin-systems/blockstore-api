@@ -6,7 +6,10 @@ const res = (status, json) => new Response(JSON.stringify(json), {
 });
 
 const resText = (status, text) => new Response(text, {
-  status: status
+  status: status,
+  headers: new Headers({
+    "Content-Type": "text/html; charset=utf-8",
+  }),
 });
 
 export const http200 = (json: any) => res(200, json);

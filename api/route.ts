@@ -77,14 +77,16 @@ async function handlePOST(req: Request, routeName: string) {
 
 // Get all records
 async function dbGET() {
-  //const result = await client.queryObject<any>("SELECT * FROM users where isverified = 'true'");
+  try {
+    const data = await sql.query(`SELECT * FROM users where isverified = 'true'`);
 
-  const data = await sql.query(`SELECT * FROM users where isverified = 'true'`);
-
-  const formatted = printGsat(data);
-
-  return send(formatted);
-//  return http200(data);
+    const formatted = printGsat(data);
+  
+    return send(formatted);
+  } catch (e) {
+    console.log('db error:', e);
+    return send([]);
+  }
 }
 async function handleGET(req: Request, routeName: string, param: string) {
   if (routeName === 'goldensat') {

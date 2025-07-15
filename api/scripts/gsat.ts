@@ -1,9 +1,9 @@
 export function printGsat(items) {
 
-  const final = [];
-  const filtered = items.filter((e) => e.isVerified && e.matchedTx);
+  const final: any = [];
+  const filtered: any = items.filter((e) => e.isverified === 'true' && e.matchedtx);
 
-  const grouped = Object.groupBy(filtered, item => item.matchedTx);
+  const grouped: any = Object.groupBy(filtered, item => item.matchedtx);
 
   for (const key in grouped) {
     const itemsData = grouped[key];
@@ -11,10 +11,10 @@ export function printGsat(items) {
     if (itemsData.length) {
       const tx = itemsData[0];
 
-      const amount = tx.tokenValueUSD; 
+      const amount = tx.tokenvalueusd; 
       let tickets = 0;
 
-      if (tx.txType === 'swap') {
+      if (tx.txtype === 'swap') {
         tickets = Math.min(Math.floor(amount / 50), 5);
         if (amount > 500) {
           // bonus
@@ -22,7 +22,7 @@ export function printGsat(items) {
         }
       }
 
-      if (tx.txType === 'lend') {
+      if (tx.txtype === 'lend') {
         if (amount >= 10 && amount <= 100) {
           tickets = 1;
         } else if (amount >= 101 && amount <= 500) {
@@ -32,15 +32,20 @@ export function printGsat(items) {
         }
       }
 
+      if (tx.tokenname === '243') {
+        tx.tokenvalue = tx.tokenvalue / 10 ** 6;
+        tx.tokenname = 'RBTC';
+      }
+
       final.push({
         address: tx.address,
         tickets: tickets,
         amount: amount,
-        token: `${String(tx.tokenValue).slice(0, 8)} ${tx.tokenName}`,
-        tx: tx.matchedTx,
+        token: `${String(tx.tokenvalue).slice(0, 8)} ${tx.tokenname}`,
+        tx: tx.matchedtx,
         site: tx.partner,
-        op: tx.txType,
-        date: tx.date
+        op: tx.txtype,
+        date: tx.datetime
       });
     }
   }

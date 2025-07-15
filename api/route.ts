@@ -2,6 +2,15 @@ import { http200, http400, send } from "../utils/response.ts";
 import { logger } from "../utils/logger.ts";
 import { headers } from "../utils/constants.ts";
 import { printGsat } from "./scripts/gsat.ts";
+import { neon } from '@neon/serverless';
+const databaseUrl = Deno.env.get('DATABASE_URL')!;
+const sql = neon(databaseUrl);
+
+const dbUrl = Deno.env.get("DATABASE_URL");
+if (!dbUrl) {
+  console.error("DATABASE_URL environment variable is not set");
+  Deno.exit(1);
+}
 
 const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
@@ -67,7 +76,20 @@ async function handlePOST(req: Request, routeName: string) {
 }
 
 // Get all records
+async function dbGET() {
+  //const result = await client.queryObject<any>("SELECT * FROM users where isverified = 'true'");
+
+  const data = await sql.query(`SELECT * FROM users where isverified = 'true'`);
+
+  const formatted = printGsat(data);
+
+  return send(formatted);
+//  return http200(data);
+}
 async function handleGET(req: Request, routeName: string, param: string) {
+  if (routeName === 'goldensat') {
+    return dbGET();
+  }
   // get one
   if (param) {
     const item = await kv.get([routeName, param]);

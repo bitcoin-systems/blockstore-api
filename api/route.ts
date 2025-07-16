@@ -78,7 +78,7 @@ async function handlePOST(req: Request, routeName: string) {
 // Get all records
 async function dbGET() {
   try {
-    const data = await sql.query(`SELECT * FROM users where isverified = 'true'`);
+    const data = await sql.query(`SELECT * FROM wallets where isverified = 1`);
 
     const formatted = printGsat(data);
   

@@ -76,11 +76,19 @@ async function handlePOST(req: Request, routeName: string) {
 }
 
 // Get all records
-async function dbGET() {
+async function dbGET(req) {
   try {
-    const data = await sql.query(`SELECT * FROM wallets where isverified = 1`);
+    const url = new URL(req.url);
+    const page = url.searchParams.get('page');
 
-    const formatted = printGsat(data);
+    const pageNumber = page ? Number(page) : 1; 
+
+    const perPage = 20;
+
+    const data = await sql.query(`SELECT * FROM wallets where isverified = 1 limit ${perPage} OFFSET ${(pageNumber  - 1) * perPage}`);
+    const total = await sql.query(`SELECT count(*) FROM wallets where isverified = 1`);
+
+    const formatted = printGsat(data, total[0].count, perPage, pageNumber);
   
     return send(formatted);
   } catch (e) {
@@ -90,7 +98,7 @@ async function dbGET() {
 }
 async function handleGET(req: Request, routeName: string, param: string) {
   if (routeName === 'goldensat') {
-    return dbGET();
+    return dbGET(req);
   }
   // get one
   if (param) {

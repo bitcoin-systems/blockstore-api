@@ -1,5 +1,7 @@
-export function printGsat(items) {
+export function printGsat(items, total, perPage, currentPage) {
+  console.log(items, total, perPage, currentPage);
   const final: any = [];
+  const pages = Math.ceil(total / perPage);
 
   for (const tx of items) {
     const amount = tx.tokenvalueusd;
@@ -85,13 +87,28 @@ export function printGsat(items) {
     font-weight: bold;
     text-align: left;
   }
+  .pagination {
+    display: flex;
+    justify-content: center;
+  }
+  .pagination button {
+    padding: 6px 12px;
+    border: 1px solid #888;
+    background: #f4f4f4;
+    cursor: pointer;
+  }
+  .pagination button.active {
+    background: #007bff;
+    color: white;
+  }
 </style>
  </head>
  <body>
    <div>
      <!--content-->
     <h1 style="text: center; margin: 10px"> Golden Sat Tracking Dashboard </h1> 
-    <h3 style="text: center; margin: 10px"> Total: ${final.length} </h3> 
+    <h3 style="text: center; margin: 10px"> Total: ${total} </h3> 
+    <h4 style="text: center; margin: 10px"> Showing: ${final.length} of ${total} records</h4> 
     <table style="width:100%">
       <tr>
         <th>Address</th>
@@ -114,6 +131,11 @@ export function printGsat(items) {
         <td>${it.date}</td>
       </tr>`))}
     </table>
+    <div class="pagination" id="pagination">
+     ${Array(pages).fill(0).map((e, i) => (
+       `<button class="${i+ 1 === currentPage ? 'active': ''}" onclick="(() => {   const index = window.location.href.indexOf('&page'); if (index === -1) return  window.location.href =  window.location.href + '&page=${i+1}';  window.location.href =  window.location.href.substring(0, index).trim()  + '&page=${i+1}' })()"> ${i+1} </button>`
+      ))}
+    </div>
    </div>
  </body>
 </html>

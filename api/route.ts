@@ -6,6 +6,14 @@ import { neon } from '@neon/serverless';
 const databaseUrl = Deno.env.get('DATABASE_URL')!;
 const sql = neon(databaseUrl);
 
+
+const RATE_LIMIT = 10; // Max requests
+const WINDOW_MS = 60_000; // 1 minute
+
+function getIP(req: Request): string {
+  return req.headers.get("x-forwarded-for") || "unknown";
+}
+
 const dbUrl = Deno.env.get("DATABASE_URL");
 if (!dbUrl) {
   console.error("DATABASE_URL environment variable is not set");
@@ -16,8 +24,45 @@ const kv = await Deno.openKv();
 const secret = Deno.env.get("API_KEY");
 const secretv2 = Deno.env.get("API_KEY_SECRET");
 
+async function isRateLimited(ip: string): Promise<boolean> {
+  const key = ["rate_limit", ip];
+  const now = Date.now();
+
+  const entry = await kv.get<typeof kv>(key);
+
+  if (!entry.value) {
+    await kv.set(key, { count: 1, resetTime: now + WINDOW_MS }, { expireIn: WINDOW_MS });
+    return false;
+  }
+
+  const { count, resetTime } = entry.value as { count: number; resetTime: number };
+
+  if (now > resetTime) {
+    await kv.set(key, { count: 1, resetTime: now + WINDOW_MS }, { expireIn: WINDOW_MS });
+    return false;
+  }
+
+  if (count >= RATE_LIMIT) {
+    return true;
+  }
+
+  await kv.set(key, { count: count + 1, resetTime }, { expireIn: resetTime - now });
+  return false;
+}
+
 // Route handler
 export const router = async (req: any) => {
+  const ip = getIP(req);
+
+  if (await isRateLimited(ip)) {
+    return new Response("Too Many Requests. This API is rate limited!", {
+      status: 429,
+      headers: {
+        "Retry-After": `${Math.ceil(WINDOW_MS / 1000)}`,
+      },
+    });
+  }
+
   const url = new URL(req.url);
   // CORS headers
 

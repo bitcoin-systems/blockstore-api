@@ -7,8 +7,8 @@ const databaseUrl = Deno.env.get('DATABASE_URL')!;
 const sql = neon(databaseUrl);
 
 
-const RATE_LIMIT = 50; // Max requests
-const WINDOW_MS = 60 * 60_000; // 1 hr minute
+const RATE_LIMIT = 30; // Max requests
+const WINDOW_MS = 60_000; // 1 hr minute
 // const PENALTY_MS = 60 * 60_000; // Lockout window (1 hour)
 
 
@@ -54,16 +54,16 @@ async function isRateLimited(ip: string): Promise<boolean> {
 
 // Route handler
 export const router = async (req: any) => {
-  const ip = getIP(req);
+  // const ip = getIP(req);
 
-  if (await isRateLimited(ip)) {
-    return new Response("Too Many Requests. This API is rate limited!", {
-      status: 429,
-      headers: {
-        "Retry-After": `${Math.ceil(WINDOW_MS / 1000)}`,
-      },
-    });
-  }
+  // if (await isRateLimited(ip)) {
+  //   return new Response("Too Many Requests. This API is rate limited!", {
+  //     status: 429,
+  //     headers: {
+  //       "Retry-After": `${Math.ceil(WINDOW_MS / 1000)}`,
+  //     },
+  //   });
+  // }
 
   const url = new URL(req.url);
   // CORS headers

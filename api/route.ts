@@ -7,8 +7,10 @@ const databaseUrl = Deno.env.get('DATABASE_URL')!;
 const sql = neon(databaseUrl);
 
 
-const RATE_LIMIT = 10; // Max requests
-const WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT = 20; // Max requests
+const WINDOW_MS = 60 * 60_000; // 1 hr minute
+// const PENALTY_MS = 60 * 60_000; // Lockout window (1 hour)
+
 
 function getIP(req: Request): string {
   return req.headers.get("x-forwarded-for") || "unknown";

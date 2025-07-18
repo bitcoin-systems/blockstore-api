@@ -1,5 +1,4 @@
 export function printGsat(items, total, perPage, currentPage) {
-  console.log(items, total, perPage, currentPage);
   const final: any = [];
   const pages = Math.ceil(total / perPage);
 
